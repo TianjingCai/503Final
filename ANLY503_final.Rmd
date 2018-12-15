@@ -1,0 +1,332 @@
+---
+title: "ANLY503_final"
+author: "Tianjing Cai"
+date: "11/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+rsconnect::setAccountInfo(name='tianjingcai95',
+			  token='886DF70418F9AA110765C3D4A9B2A06D',
+			  secret='YULeS4CRLriMmMfpT/F3f8cL04S7iOWs0A+fM/uA')
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+alcohol_consump_cap <- fread('../dataset/total-alcohol-consumption-per-capita-litres-of-pure-alcohol.csv')
+attach(alcohol_consump_cap)
+setnames(alcohol_consump_cap, c("Entity", "Code", "Year", "Alcohol_consumption_per_capita"))
+
+# top 10 country that have highest alcohol consumption capita
+alcohol_consump_cap_top10 <- alcohol_consump_cap %>% arrange( desc(Alcohol_consumption_per_capita)) %>% top_n(10)
+
+rm(alcohol_consump_cap)
+dev.new(width=5, height=4)
+ggplot(data = alcohol_consump_cap_top10, aes(x = reorder(Entity, Alcohol_consumption_per_capita), y =Alcohol_consumption_per_capita)) + labs(x = "Country", y = "Alcohol consumption per capita") +geom_bar(stat = "identity", fill = "purple", width = 0.6) + ggtitle("Total alcohol consumption per capita") +geom_text(aes(label = paste(Alcohol_consumption_per_capita, ' litres')), hjust=0.01, size=3.5) +coord_flip() + scale_y_continuous(limits = c(0, max(alcohol_consump_cap_top10$Alcohol_consumption_per_capita) * 1.3))
+
+
+aspect_ratio <- 2.5
+height <- 7
+ggsave("../dataset/alcohol_consump_per_capita.png", height = 3 , width = 5)
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+beer_consump_person <- fread('../dataset/beer-consumption-per-person.csv')
+wine_consump_person <- fread('../dataset/wine-consumption-per-person.csv')
+spirits_consump_person <- fread('../dataset/spirits-consumption-per-person.csv')
+setnames(beer_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+setnames(wine_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+setnames(spirits_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+
+#beer_df <- beer_consump_person %>% group_by(Entity) %>% summarise(average_consump = #mean(beer_consump_per_person)) %>% arrange( desc(average_consump))
+
+# select certain country and check beer consumption per person over years
+beer_consump_person_filter <- beer_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+wine_consump_person_filter <- wine_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+spirits_consump_person_filter <- spirits_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+beer_consump_person_filter$liquor_type = 'beer'
+wine_consump_person_filter$liquor_type = 'wine'
+spirits_consump_person_filter$liquor_type = 'spirits'
+
+
+
+liquor_consump_person_filter <- bind_rows(list(beer_consump_person_filter, wine_consump_person_filter, spirits_consump_person_filter))
+
+# remove unnecessary dataframes to save memory
+rm(wine_consump_person, spirits_consump_person, beer_consump_person)
+rm(wine_consump_person_filter, spirits_consump_person_filter, beer_consump_person_filter)
+
+
+ggplot(liquor_consump_person_filter, aes(Year)) + geom_point(aes(x = Year, y = consump_per_person), shape = 20) + geom_line(aes(y = consump_per_person, colour = Entity, group = Entity)) + labs(x = "Year", y = "Consumption per person") + facet_wrap(~liquor_type, nrow = 2)+ ggtitle('Alcohol consumption per person over years')
+
+ggsave("../dataset/alcohol_consump_per_person_year.png", height = 3 , width = 5) 
+```
+
+```{r}
+alcohol_mental_problem <- fread('../dataset/mental-health-as-risk-for-alcohol-dependency.csv')
+setnames(alcohol_mental_problem, c('problem_name', 'Code', 'Year', 'risk_alcohol_dependency'))
+ggplot(data = alcohol_mental_problem, aes(x = reorder(problem_name, risk_alcohol_dependency), y =risk_alcohol_dependency)) + labs(x = "Disorder name", y = "Increased risk of alcohol dependency") +geom_bar(stat = "identity", fill = "red", width = 0.8) + ggtitle("Risk of mental health for alcohol") +geom_text(aes(label = paste(risk_alcohol_dependency)), hjust=-0.1, size=3.5) +coord_flip()
+
+ggsave("../dataset/risk_mental_health_alcohol.png", height = 3 , width = 7) 
+```
+### Increased risk of developing alcohol dependency or abuse in individuals with a given mental healthdisorder relative to those without.
+```{r}
+### plotly visualization on R
+library(plotly)
+alcohol_consump_person_us <- fread('../dataset/alcohol-consumption-per-person-us.csv')
+title <- list(
+  title = 'Alcohol consumption per person in U.S'
+)
+x <- list(
+  title = 'Year'
+)
+
+y <- list(
+  title = 'Alcohol consumption per person / litres'
+)
+p <- plot_ly(alcohol_consump_person_us, x = ~Year , mode = 'lines') %>% add_trace(y = ~alcohol_consump_person_us$`Beer (litres per person)`, type = 'scatter', name = 'Beer') %>% add_trace(y = ~alcohol_consump_person_us$`Wine (litres per person)`, type = 'scatter', name = 'Wine')  %>% add_trace(y = ~alcohol_consump_person_us$`Spirits (litres per person)`, type = 'scatter', name = 'Spirits') %>% layout(title = 'Alcohol consumption per person in U.S', xaxis = x, yaxis = y)
+
+chart_link = api_create(p, filename="alcohol_consump_person_us")
+chart_link
+```
+```{r}
+# plotly /R 3D
+library(threejs)
+library(htmlwidgets)
+data = alcohol_consump_person_us
+
+MyJ3_alcohol_consump = scatterplot3js(data$`Beer (litres per person)`, data$`Wine (litres per person)`, data$`Spirits (litres per person)`, color = replicate(length(data$Year), "red")[as.factor(data$Year)], size = 0.6, axisLabels = c("Beer consumption", "Wine consumption", "Spirits consumption"), main = 'Consumption of alcohols per person over years')
+
+saveWidget(MyJ3_alcohol_consump, file = "MyJ3_alcohol_consump.html", selfcontained = TRUE, libdir = NULL, background = 'white')
+
+```
+
+```{r}
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+rsconnect::setAccountInfo(name='tianjingcai95',
+			  token='886DF70418F9AA110765C3D4A9B2A06D',
+			  secret='YULeS4CRLriMmMfpT/F3f8cL04S7iOWs0A+fM/uA')
+
+
+alcohol_gdp <- fread('../dataset/alcohol-consumption-vs-gdp-per-capita.csv')
+setnames(alcohol_gdp, c('Entity', 'Code', 'Year', 'Alcohol consumption', 'GDP per capita', 'Total population'))
+
+# only look at alcohol consumption and gdp value at year 2015
+alcohol_gdp_2015 <- alcohol_gdp %>% filter(Year == 2015) 
+# Define UI for application that plots features of movies
+ui <- fluidPage(
+  
+  # Sidebar layout with a input and output definitions
+  sidebarLayout(
+    
+    # Inputs
+    sidebarPanel(
+      
+      # Select variable for y-axis
+      selectInput(inputId = "y", 
+                  label = "Y-axis:",
+                  choices = c("Alcohol consumption"), 
+                  selected = "Alcohol consumption"),
+      
+      # Select variable for x-axis
+      selectInput(inputId = "x", 
+                  label = "X-axis:",
+                  choices = c("GDP per capita"), 
+                  selected = "GDP per capita"),
+      
+      # Set alpha level
+      sliderInput(inputId = "gdp_threshold", 
+                  label = 'Minimum GDP threshold:', 
+                  min = 1000, max = 100000, 
+                  value = 52000)
+    ),
+    
+    # Outputs
+    mainPanel(
+      plotOutput(outputId = "scatterplot")
+    )
+  )
+)
+
+# Define server function required to create the scatterplot
+server <- function(input, output) {
+  alcohol_gdp_2015_filtered <- reactive({alcohol_gdp_2015 %>% filter(`GDP per capita` > input$gdp_threshold)})
+  # Create scatterplot object the plotOutput function is expecting
+  output$scatterplot <- renderPlot({
+    ggplot(data = alcohol_gdp_2015_filtered(), aes_string(x = as.name(input$x), y = as.name(input$y))) +
+      geom_point(aes(color = 'red'))+geom_text(aes(label=Entity),hjust=0, vjust=0) + ggtitle('Scatterplot for GDP per capital versus alcohol consumption')
+  })
+}
+
+# Create the Shiny app object
+shinyApp(ui = ui, server = server)
+```
+```{r}
+### leaflet R
+library(leaflet)
+m <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+m  # Print the map
+```
+
+```{r}
+library(sp)
+library(maps)
+library(maptools)
+library(leaflet)
+library(rgdal)
+library(tigris)
+library(dplyr)
+library(sp)
+library(sf)
+library(maps)
+library(openintro)
+library(raster)
+library(htmlwidgets)
+library(viridis)
+library(data.table)
+#library(htmlwidgets)
+# Download .shp file on the web:
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="world_shape_file.zip")
+system("unzip world_shape_file.zip")
+
+# get worldwide statistics for share of adults who drank alcohol in last year
+drink_world <- fread('../dataset/share-of-adults-who-drank-alcohol-in-last-year.csv')
+heavy_drink_world <- fread('../dataset/drinkers-had-a-heavy-session-in-past-30-days.csv')
+
+non_drink_world <- fread('../dataset/share-who-have-not-drank-alcohol-in-last-year.csv')
+
+setnames(drink_world, c('Entity', 'Code', 'Year', 'perc_pop_drink'))
+setnames(heavy_drink_world, c('Entity', 'Code', 'Year', 'perc_pop_heavy_drink'))
+setnames(non_drink_world, c('Entity', 'Code', 'Year', 'perc_pop_non_drink'))
+
+```
+
+```{r}
+# Leaflet choropleth plot
+# Read the file with the rgdal library in R
+
+world_spdf=readOGR( dsn= getwd() , layer="TM_WORLD_BORDERS_SIMPL-0.3")
+
+#head(world_spdf@data)
+#summary(world_spdf@data)
+
+# use geo_join to merge worldwide haavy alcohol drink data with world data
+# otherwise there will be name label mismatch
+world_spdf<- geo_join( world_spdf, drink_world,  'ISO3', 'Code')
+world_spdf <- geo_join( world_spdf, heavy_drink_world, by = 'Code')
+world_spdf <- geo_join( world_spdf,non_drink_world,  by = 'Code')
+
+
+# Custom choropleth map
+# Create a color palette with handmade bins.
+mybins=seq(0, 100, by = 10)
+mypalette1 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_drink, na.color="transparent", bins=mybins)
+mypalette2 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_heavy_drink, na.color="transparent", bins=mybins)
+
+mypalette3 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_non_drink, na.color="transparent", bins=mybins)
+ 
+# Prepar the text for the tooltip:
+mytext1=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult alcohol drinker in 2010: ", world_spdf$perc_pop_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Prepar the text for the tooltip:
+mytext2=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult heavy alcohol drinker in 2010: ", world_spdf$perc_pop_heavy_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Prepar the text for the tooltip:
+mytext3=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult non-alcohol drinker in 2010: ", world_spdf$perc_pop_non_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Final Map
+m <- leaflet(data =world_spdf) %>%
+  addTiles()  %>%
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons(
+    fillColor = ~mypalette1(perc_pop_drink), stroke=TRUE, fillOpacity = 0.9, color="white", weight=0.3, label = mytext1, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"), group = 'percentage of alcohol drinker')%>% 
+  addPolygons(
+    fillColor = ~mypalette2(perc_pop_heavy_drink), stroke=TRUE, fillOpacity = 0.9, color="white", label = mytext2, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"), weight=0.3, group = 'percentage of heavy alcohol drinker')%>%
+  addPolygons(
+    fillColor = ~mypalette3(perc_pop_non_drink), stroke=TRUE, fillOpacity = 0.9, color="white", label = mytext3, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"),weight=0.3, group = 'percentage of non-alcohol drinker')%>%
+  addMarkers(lng = 116.4074, lat =39.9042 , popup = "I born in here! Beijing, China", group = "Where I grew up") %>%
+  addLegend( pal=mypalette1, values=~perc_pop_drink, group = 'percentage of alcohol drinker', opacity=0.9, title = "percentage level", position = "bottomleft") %>% 
+  
+  addLayersControl(baseGroups = c('percentage of alcohol drinker', "percentage of heavy alcohol drinker", 'percentage of non-alcohol drinker'), 
+                   overlayGroups = c("Where I grew up"),
+                   options = layersControlOptions(collapsed = FALSE))
+
+
+saveWidget(m, file = "alcohol_drinker.html", selfcontained = F)
+```
+
+
+```{r}
+# network D3 visualization for relationship among deaths, alcohol dependency and mental disorder
+alcohol_disorder <- fread('../dataset/alcohol_disorder.csv')
+alcohol_disorder$weight <- floor(alcohol_disorder$weight)
+sources <- alcohol_disorder %>%
+  distinct(source) %>%
+  rename(label = source)
+
+destinations <- alcohol_disorder %>%
+  distinct(dest) %>%
+  rename(label = dest)
+
+nodes <- full_join(sources, destinations, by = "label")
+nodes <- nodes %>% rowid_to_column("id")
+
+library(plyr)
+
+edges <- alcohol_disorder %>% 
+  left_join(nodes, by = c("source" = "label")) %>% 
+  rename(from = id)
+
+edges <- edges %>% 
+  left_join(nodes, by = c("dest" = "label")) %>% 
+  rename(to = id)
+
+nodes_d3 <- mutate(nodes, id = id - 1)
+edges_d3 <- mutate(edges, from = from - 1, to = to - 1)
+
+library(igraph)
+p <- forceNetwork(Links = edges_d3, Nodes = nodes_d3, Source = "from", Target = "to", NodeID = "label", Group = "id", Value = "weight", opacity = 1, fontSize = 16, zoom = TRUE)
+
+```
+
+```{r}
+htmlwidgets::saveWidget(as_widget(p), "../dataset/network.html")
+```
+```

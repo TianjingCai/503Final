@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <style>
+
+    body {
+        font-family:verdana;
+
+        background-image: ;
+        background-color: ;
+
+    }
+
+    .headerLogo{
+      top:-65px;
+      height:150px;
+      line-height:150px;
+      overflow:hidden;
+      
+    }
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #004d99;
+        max-width:1357px;
+    }
+
+    li {
+        float: left;
+    }
+
+    li a, .dropbtn {
+        display: inline-block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    li a:hover, .dropdown:hover .dropbtn {
+        background-color: grey;
+    }
+
+    li.dropdown {
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 160px;
+        
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {background-color: light grey}
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    td {
+        padding: 15px;
+        text-align: left;
+        width: 500px;
+    }
+
+    tr{
+       padding: 0px;
+       text-align: top;
+    }
+    </style>
+  </head>
+  <body>p&nbsp; =
+    <!-- Side navigation -->
+    <div class="sidenav"> <a href="#Intro">Intro</a> <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a> <a href="#part3">Part 3</a> <a href="#part4">Part
+        4</a> <a href="#conclusion">Conclusion</a> </div>
+    <!-- Page content -->
+    <div class="main">
+      <div class="content">
+        <h1><b><span style="color: #7c795d;"><span style="font-family: &quot;Trocchi&quot;,serif;">Alcohol
+                consumption and related social issues</span></span></b></h1>
+        <h1><span style="color: #7c795d;"><span style="font-family: &quot;Trocchi&quot;,serif;"></span></span>
+        </h1>
+        <p><br>
+        </p>
+        <h2 id="Intro"><b>Introduction: </b></h2>
+        <p> <span style="color: #7c795d;">Worldwide, alcohol hold important
+            role in social networking and engagement. National Institute on
+            Alcohol Abuse and Alcoholism classified two major level of alcohol
+            drinking: binge drinking (drinking that brings blood alcohol
+            concentration levels to 0.08 g/dL) and heavy alcohol use (binge
+            drinking on 5 or more days in the past month). However, heavy
+            alcohol use not only detriment our own health: mental disorder and
+            mortality, but also bring serious impact to society: traffic
+            accidents and crimes. In this project I provide detailed analysis on
+            overall alcohol consumption across years, countries, ages and
+            gender, and then delve into impact of alcohol abuse on human
+            society. </span></p>
+      </div>
+      <div class="content">
+        <h2 id="part1"><b>Part 1: Overall alcohol consumption</b></h2>
+        <p><span style="color: #7c795d;">In this part, I will discuss about
+            worldwide alcohol consumption distribution and then focusing on
+            three major types of alcohol: beer, wine and spirits consumption
+            situation.</span></p>
+        <iframe seamless="" src="./alcohol_drinker.html" height="500" width="100%"></iframe>
+        <p><span style="color: #7c795d;"><br>
+          </span></p>
+        <p>The leaflet plot above shows distribution of three types of alcohol
+          drinker in 2010. As we could see, drinking is so prevalent in well
+          developed countries especially those&nbsp; in Western Europe and North
+          America, and this finding leads to the analysis of relationship
+          between alcohol consumption and GDP per capita which
+          plotted below. We could see, in 2010, almost 95 percents of adults had
+          drunk alcohol in previous year.</p>
+        <p><br>
+        </p>
+        <iframe seamless="" src="https://tianjingcai95.shinyapps.io/alcohol_gdp/"
+          height="500"
+          width="100%"></iframe>
+        <br>
+        <h2 id="part2">Part 2</h2>
+        <h3> 2. What have changed to popular songs </h3>
+        <!--- Network Model--->
+        <p> Our team studies the trend for the development of popular music
+          throughout the years, we chose several factors to investigate in. Let
+          us first look at an overview of the most popular bigrams used in
+          lyrics, visualized using a network. </p>
+        <div> </div>
+        <p> Now, we know that the lyrics are longer, but is the lexical
+          diversity lower or higher? Lexical diversity is the percentage of
+          distinct words over the total number of words, lower lexical diversity
+          means the lyrics are simpler. </p>
+        <!--- Line plot change of lexical diversity--->
+        <div class="iframePlaceholder" id="124" stype="position: relative"> </div>
+        <p> From the plot, we can see that there is an obvious decrease in
+          lexical diversity throughout the years. Combining with the fact that
+          lyrics are getting longer, there are actually fewer unique words in
+          the popular songs. </p>
+        <p> Finally, Let us look at one more interesting statistics, the average
+          length of song names. </p>
+        <!--- line plot average length of song names--->
+        <div class="iframePlaceholder" id="125" stype="position: relative"> </div>
+        <p> Not only the word choices are simpler, the titles are also getting
+          shorter and simpler. A quick conclusion we can make is that the even
+          though the length of popular songs are getting longer, the contents
+          are getting less complicated and simpler. </p>
+        <h2 id="part3">Part 3</h2>
+        <h3> 3. What is the change of sentiments in lyrics </h3>
+        <p> In this section, the team uses the sentimental analysis method to
+          study the trend of lyrics in popular music. In the first part of this
+          project, the songs of Taylor Swift were used as an example. The team
+          includes all songs in the Billboard over last 10 years. The lyrics are
+          first to split to lines and each line with words which represent
+          certain sentiment will be classified and included in our research. All
+          lines in lyrics without any words for moods are neglected. </p>
+        <p> Same as the Taylor Swift example, all the lyrics are classified into
+          8 categories: anger, anticipation, disgust, fear, joy, sadness,
+          surprise, and trust. And these sentiments could be furtherly
+          classified into two categories: positive and negative. </p>
+        <div class="row"> <img src="8sentiment_bar.png" alt="barchart of 8 major sentiment count  "
+            title="eight major sentiment count"
+            style="width:100%">
+        </div>
+        <p> The plot above shows the percentage of the numbers of lines with
+          certain sentiment over the total amount of lines in the songs.
+          According to the plot, we can find that there are more positive songs
+          in the last 10 years and the most frequent sentiment in lyrics is the
+          joy. </p>
+        <div class="row"> <img src="sentiment_year.png" alt="Line plot for change of Sentiment change over Years  "
+            title="change of sentiment over year"
+            style="width:100%">
+        </div>
+        <p> Then, let us have a look at the change of the sentiments over time.
+          The team firstly treat each song as a whole and find the dominant
+          sentiment (positive or negative) in the song. The sentiment score
+          means the number of positive songs or negative songs. With the graph,
+          we can find that there are generally more positive songs in the last
+          10 years. However, there is a clear increase in negative songs. </p>
+        <div class="row"> <img src="sentiment_change_year.png" alt="Line plot for Sentiment change over Years  "
+            title="Change of Detailed Sentiments over Years"
+            style="width:100%">
+        </div>
+        <p> The team also use detailed sentiments to study the trend. Here, all
+          the sentences in the lyrics are counted separately and the sentiment
+          score means the total amount of lines with a certain sentiment over a
+          year. In the graph, only 4 sentiments with significant changes over
+          years are included. It is clear that Joy sentiment is most frequent.
+          However, there is an increase in the proportion of those Angry lyrics.
+          Sadness mood is surprisingly uncommon in songs. In general, this part
+          of the study shows that there are more negative songs recently,
+          especially angry songs, and the team wants to further study the
+          relationship between the sentiments in songs and the attitudes in
+          those Twitters related to the songs. </p>
+        <h2 id="part4">Part 4</h2>
+        <div> </div>
+        <h2 id="conclusion">Conclusion</h2>
+        <div> </div>
+      </div>
+    </div>
+  </body>
+</html>

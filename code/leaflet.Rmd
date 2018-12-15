@@ -1,0 +1,84 @@
+---
+title: "Untitled"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r}
+# Leaflet choropleth plot
+# Read the file with the rgdal library in R
+
+world_spdf=readOGR( dsn= getwd() , layer="TM_WORLD_BORDERS_SIMPL-0.3")
+
+#head(world_spdf@data)
+#summary(world_spdf@data)
+
+# use geo_join to merge worldwide haavy alcohol drink data with world data
+# otherwise there will be name label mismatch
+world_spdf<- geo_join( world_spdf, drink_world,  'ISO3', 'Code')
+world_spdf <- geo_join( world_spdf, heavy_drink_world, by = 'Code')
+world_spdf <- geo_join( world_spdf,non_drink_world,  by = 'Code')
+
+
+# Custom choropleth map
+# Create a color palette with handmade bins.
+mybins=seq(0, 100, by = 10)
+mypalette1 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_drink, na.color="transparent", bins=mybins)
+mypalette2 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_heavy_drink, na.color="transparent", bins=mybins)
+
+mypalette3 = colorBin( palette="YlOrBr", domain=world_spdf$perc_pop_non_drink, na.color="transparent", bins=mybins)
+ 
+# Prepar the text for the tooltip:
+mytext1=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult alcohol drinker in 2010: ", world_spdf$perc_pop_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Prepar the text for the tooltip:
+mytext2=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult heavy alcohol drinker in 2010: ", world_spdf$perc_pop_heavy_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Prepar the text for the tooltip:
+mytext3=paste("Country: ", world_spdf$NAME,"<br/>", "Share of adult non-alcohol drinker in 2010: ", world_spdf$perc_pop_non_drink,'%', "<br/>", sep="") %>% lapply(htmltools::HTML)
+
+# Final Map
+m <- leaflet(data =world_spdf) %>%
+  addTiles()  %>%
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons(
+    fillColor = ~mypalette1(perc_pop_drink), stroke=TRUE, fillOpacity = 0.9, color="white", weight=0.3, label = mytext1, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"), group = 'percentage of alcohol drinker')%>% 
+  addPolygons(
+    fillColor = ~mypalette2(perc_pop_heavy_drink), stroke=TRUE, fillOpacity = 0.9, color="white", label = mytext2, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"), weight=0.3, group = 'percentage of heavy alcohol drinker')%>%
+  addPolygons(
+    fillColor = ~mypalette3(perc_pop_non_drink), stroke=TRUE, fillOpacity = 0.9, color="white", label = mytext3, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto"),weight=0.3, group = 'percentage of non-alcohol drinker')%>%
+  addMarkers(lng = 116.4074, lat =39.9042 , popup = "I born in here! Beijing, China", group = "Where I grew up") %>%
+  addLegend( pal=mypalette1, values=~perc_pop_drink, group = 'percentage of alcohol drinker', opacity=0.9, title = "percentage level", position = "bottomleft") %>% 
+  
+  addLayersControl(baseGroups = c('percentage of alcohol drinker', "percentage of heavy alcohol drinker", 'percentage of non-alcohol drinker'), 
+                   overlayGroups = c("Where I grew up"),
+                   options = layersControlOptions(collapsed = FALSE))
+
+
+saveWidget(m, file = "alcohol_drinker.html", selfcontained = F)
+```
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

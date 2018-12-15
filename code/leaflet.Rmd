@@ -20,6 +20,34 @@ library(igraph)
 library(ggraph)
 library(visNetwork)
 library(networkD3)
+library(sp)
+library(maps)
+library(maptools)
+library(leaflet)
+library(rgdal)
+library(tigris)
+library(dplyr)
+library(sp)
+library(sf)
+library(maps)
+library(openintro)
+library(raster)
+library(htmlwidgets)
+library(viridis)
+library(data.table)
+
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="world_shape_file.zip")
+system("unzip world_shape_file.zip")
+
+# get worldwide statistics for share of adults who drank alcohol in last year
+drink_world <- fread('../dataset/share-of-adults-who-drank-alcohol-in-last-year.csv')
+heavy_drink_world <- fread('../dataset/drinkers-had-a-heavy-session-in-past-30-days.csv')
+
+non_drink_world <- fread('../dataset/share-who-have-not-drank-alcohol-in-last-year.csv')
+
+setnames(drink_world, c('Entity', 'Code', 'Year', 'perc_pop_drink'))
+setnames(heavy_drink_world, c('Entity', 'Code', 'Year', 'perc_pop_heavy_drink'))
+setnames(non_drink_world, c('Entity', 'Code', 'Year', 'perc_pop_non_drink'))
 ```
 
 ```{r}

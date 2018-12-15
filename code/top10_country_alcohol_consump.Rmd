@@ -1,0 +1,45 @@
+---
+title: "Top10_country_alcohol_consump"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r echo = FALSE}
+alcohol_consump_cap <- fread('../dataset/total-alcohol-consumption-per-capita-litres-of-pure-alcohol.csv')
+attach(alcohol_consump_cap)
+setnames(alcohol_consump_cap, c("Entity", "Code", "Year", "Alcohol_consumption_per_capita"))
+
+# top 10 country that have highest alcohol consumption capita
+alcohol_consump_cap_top10 <- alcohol_consump_cap %>% arrange( desc(Alcohol_consumption_per_capita)) %>% top_n(10)
+
+rm(alcohol_consump_cap)
+dev.new(width=5, height=4)
+ggplot(data = alcohol_consump_cap_top10, aes(x = reorder(Entity, Alcohol_consumption_per_capita), y =Alcohol_consumption_per_capita)) + labs(x = "Country", y = "Alcohol consumption per capita") +geom_bar(stat = "identity", fill = "purple", width = 0.6) + ggtitle("Total alcohol consumption per capita") +geom_text(aes(label = paste(Alcohol_consumption_per_capita, ' litres')), hjust=0.01, size=3.5) +coord_flip() + scale_y_continuous(limits = c(0, max(alcohol_consump_cap_top10$Alcohol_consumption_per_capita) * 1.3))
+
+
+aspect_ratio <- 2.5
+height <- 7
+ggsave("../dataset/alcohol_consump_per_capita.png", height = 3 , width = 5)
+
+
+```

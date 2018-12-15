@@ -1,0 +1,32 @@
+---
+title: "Alcohol_depend_mental_disorder"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r}
+alcohol_mental_problem <- fread('../dataset/mental-health-as-risk-for-alcohol-dependency.csv')
+setnames(alcohol_mental_problem, c('problem_name', 'Code', 'Year', 'risk_alcohol_dependency'))
+ggplot(data = alcohol_mental_problem, aes(x = reorder(problem_name, risk_alcohol_dependency), y =risk_alcohol_dependency)) + labs(x = "Disorder name", y = "Increased risk of alcohol dependency") +geom_bar(stat = "identity", fill = "red", width = 0.8) + ggtitle("Risk of alcohol dependency for mental disorders") +geom_text(aes(label = paste(risk_alcohol_dependency)), hjust=-0.1, size=3.5) +coord_flip()
+
+ggsave("../dataset/risk_mental_health_alcohol.png", height = 3 , width = 7) 
+```

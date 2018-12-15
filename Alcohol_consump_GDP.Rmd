@@ -49,7 +49,7 @@ ui <- fluidPage(
       
       # Set alpha level
       sliderInput(inputId = "gdp_threshold", 
-                  label = 'Minimum GDP threshold:', 
+                  label = 'Maximum GDP threshold:', 
                   min = 1000, max = 100000, 
                   value = 52000)
     ),
@@ -67,7 +67,7 @@ server <- function(input, output) {
   # Create scatterplot object the plotOutput function is expecting
   output$scatterplot <- renderPlot({
     ggplot(data = alcohol_gdp_2015_filtered(), aes_string(x = as.name(input$x), y = as.name(input$y))) +
-      geom_point(aes(color = 'red'))+geom_text(aes(label=Entity),hjust=0, vjust=0) + ggtitle('Scatterplot for GDP per capital versus alcohol consumption')
+      geom_point(aes(color = 'red'))+geom_text(aes(label=Entity),hjust=0, vjust=0) + ggtitle('Scatterplot for GDP per capital versus alcohol consumption')+ labs(x = paste(as.name(input$x),'/ dollar'), y = paste(as.name(input$y), '/ litres'))
   })
 }
 

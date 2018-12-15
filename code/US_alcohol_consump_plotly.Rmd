@@ -1,0 +1,45 @@
+---
+title: "US_alcohol_consump_plotly"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+```
+
+```{r, echo = FALSE}
+### plotly visualization on R
+library(plotly)
+alcohol_consump_person_us <- fread('../dataset/alcohol-consumption-per-person-us.csv')
+title <- list(
+  title = 'Alcohol consumption per person in U.S'
+)
+x <- list(
+  title = 'Year'
+)
+
+y <- list(
+  title = 'Alcohol consumption per person / litres'
+)
+p <- plot_ly(alcohol_consump_person_us, x = ~Year , mode = 'lines') %>% add_trace(y = ~alcohol_consump_person_us$`Beer (litres per person)`, type = 'scatter', name = 'Beer') %>% add_trace(y = ~alcohol_consump_person_us$`Wine (litres per person)`, type = 'scatter', name = 'Wine')  %>% add_trace(y = ~alcohol_consump_person_us$`Spirits (litres per person)`, type = 'scatter', name = 'Spirits') %>% layout(title = 'Alcohol consumption per person in U.S', xaxis = x, yaxis = y)
+
+chart_link = api_create(p, filename="alcohol_consump_person_us")
+chart_link
+```

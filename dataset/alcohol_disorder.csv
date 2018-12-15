@@ -1,0 +1,27 @@
+weight,source,dest
+10,alcohol dependency,Suicide
+6,alcohol dependency,Intermittent exposive disorder
+4.1,alcohol dependency,Dysthymia
+3.9,alcohol dependency,Oppositional defiant disorder
+3.6,alcohol dependency,Bipolar disorder
+3.3,alcohol dependency,Social phobia
+3.2,alcohol dependency,Any anxiety disorder
+3.2,alcohol dependency,PTSD
+2.8,alcohol dependency,Panic disorder
+2.7,alcohol dependency,Any disruptive behavirour disorder
+2.7,alcohol dependency,Separation anxiety
+2.7,alcohol dependency,Specific phobia
+2.4,alcohol dependency,Antisocial personality disorder
+2.3,alcohol dependency,Agoraphobia
+2,alcohol dependency,Conduct disorder
+1.8,alcohol dependency,Attention dificit hyperactivity
+1.8,alcohol dependency,Any mood disorder
+1.6,alcohol dependency,Generalized anxiety disorder
+1.6,alcohol dependency,Major depression
+20,Major depression,Suicide
+2.7,Any anxiety disorder,Suicide
+12.6,Schizophrenia,Suicide
+5.7,Bipolar disorder,Suicide
+7.6,Anorenia nervosa,Suicide
+6.9,Opioid dependence,Suicide
+8.2,Psychostimultant dependence,Suicide

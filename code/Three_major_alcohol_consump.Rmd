@@ -1,0 +1,60 @@
+---
+title: "Three_major_alcohol_consump"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r pressure, echo=FALSE}
+beer_consump_person <- fread('../dataset/beer-consumption-per-person.csv')
+wine_consump_person <- fread('../dataset/wine-consumption-per-person.csv')
+spirits_consump_person <- fread('../dataset/spirits-consumption-per-person.csv')
+setnames(beer_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+setnames(wine_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+setnames(spirits_consump_person, c("Entity", "Code", "Year", "consump_per_person"))
+
+#beer_df <- beer_consump_person %>% group_by(Entity) %>% summarise(average_consump = #mean(beer_consump_per_person)) %>% arrange( desc(average_consump))
+
+# select certain country and check beer consumption per person over years
+beer_consump_person_filter <- beer_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+wine_consump_person_filter <- wine_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+spirits_consump_person_filter <- spirits_consump_person[ Entity %in% c('United States', 'Germany', 'Japan', 'China')]
+
+beer_consump_person_filter$liquor_type = 'beer'
+wine_consump_person_filter$liquor_type = 'wine'
+spirits_consump_person_filter$liquor_type = 'spirits'
+
+
+
+liquor_consump_person_filter <- bind_rows(list(beer_consump_person_filter, wine_consump_person_filter, spirits_consump_person_filter))
+
+# remove unnecessary dataframes to save memory
+rm(wine_consump_person, spirits_consump_person, beer_consump_person)
+rm(wine_consump_person_filter, spirits_consump_person_filter, beer_consump_person_filter)
+
+
+ggplot(liquor_consump_person_filter, aes(Year)) + geom_point(aes(x = Year, y = consump_per_person), shape = 20) + geom_line(aes(y = consump_per_person, colour = Entity, group = Entity)) + labs(x = "Year", y = "Consumption per person") + facet_wrap(~liquor_type, nrow = 2)+ ggtitle('Alcohol consumption per person over years')
+
+ggsave("../dataset/alcohol_consump_per_person_year.png", height = 3 , width = 5) 
+```

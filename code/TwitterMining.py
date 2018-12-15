@@ -114,6 +114,6 @@ hfilename="file_"+nohashname+".txt"
 rawfile="file_rawtweets_"+nohashname+".txt"
 twitter_stream = Stream(auth, Listener(numtweets, hfilename, rawfile))
 #twitter_stream.filter(track=['#womensrights'])
-twitter_stream.filter(track=[hashname])
+twitter_stream.filter(languages=["en"],track=[hashname])
 
 

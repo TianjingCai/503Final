@@ -28,6 +28,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
 import re
+import enchant
 #https://docs.python.org/3/library/re.html
 
 linecount=0
@@ -42,7 +43,7 @@ BagOfLinks=[]
 tweetsfile="file_Alcohol.txt"
 
 ###################################
-
+Dict =  enchant.Dict("en_US")
 with open(tweetsfile, 'r') as file:
     for line in file:
         #print(line,"\n")
@@ -63,13 +64,14 @@ with open(tweetsfile, 'r') as file:
         regex4=re.compile('.+\..+')
         for item in WordList:
             if(len(item)>2):
-                if((re.match(regex1,item))):
+                # check the word after hashtag is english
+                if((re.match(regex1,item)) and Dict.check(item[1:])):
                     #print(item)
                     newitem=item[1:] #remove the hash
                     BagOfHashes.append(newitem)
                     hashcount=hashcount+1
                 elif(re.match(regex2,item)):
-                    if(re.match(regex3,item) or re.match(regex4,item)):
+                    if(re.match(regex3,item) or re.match(regex4,item) or not Dict.check(item)):
                         BagOfLinks.append(item)
                     else:
                         BagOfWords.append(item)

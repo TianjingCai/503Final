@@ -1,0 +1,58 @@
+---
+title: "Alcohol_disorder_NetworkD3"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r}
+# network D3 visualization for relationship among deaths, alcohol dependency and mental disorder
+alcohol_disorder <- fread('../dataset/alcohol_disorder.csv')
+alcohol_disorder$weight <- floor(alcohol_disorder$weight)
+sources <- alcohol_disorder %>%
+  distinct(source) %>%
+  rename(label = source)
+
+destinations <- alcohol_disorder %>%
+  distinct(dest) %>%
+  rename(label = dest)
+
+nodes <- full_join(sources, destinations, by = "label")
+nodes <- nodes %>% rowid_to_column("id")
+
+library(plyr)
+
+edges <- alcohol_disorder %>% 
+  left_join(nodes, by = c("source" = "label")) %>% 
+  rename(from = id)
+
+edges <- edges %>% 
+  left_join(nodes, by = c("dest" = "label")) %>% 
+  rename(to = id)
+
+nodes_d3 <- mutate(nodes, id = id - 1)
+edges_d3 <- mutate(edges, from = from - 1, to = to - 1)
+
+library(igraph)
+p <- forceNetwork(Links = edges_d3, Nodes = nodes_d3, Source = "from", Target = "to", NodeID = "label", Group = "id", Value = "weight", opacity = 1, fontSize = 16, zoom = TRUE)
+
+htmlwidgets::saveWidget(as_widget(p), "../dataset/network.html")
+```

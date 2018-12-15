@@ -1,0 +1,36 @@
+---
+title: "Alcohol_consump_US_3D"
+author: "Tianjing Cai"
+date: "12/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(data.table)
+require(dplyr)
+library(shiny)
+require(tidyr)
+require(data.table)
+library(tidyverse)
+library(DT)
+
+library(ggplot2)
+library(plotly)
+library(igraph)
+library(ggraph)
+library(visNetwork)
+library(networkD3)
+```
+
+```{r}
+# plotly /R 3D
+library(threejs)
+library(htmlwidgets)
+data = alcohol_consump_person_us
+
+MyJ3_alcohol_consump = scatterplot3js(data$`Beer (litres per person)`, data$`Wine (litres per person)`, data$`Spirits (litres per person)`, color = replicate(length(data$Year), "red")[as.factor(data$Year)], size = 0.6, axisLabels = c("Beer consumption /litres", "Wine consumption /litres", "Spirits consumption litres"), main = 'Consumption of alcohols per person over years')
+
+saveWidget(MyJ3_alcohol_consump, file = "../dataset/MyJ3_alcohol_consump.html", selfcontained = TRUE, libdir = NULL, background = 'white')
+
+```

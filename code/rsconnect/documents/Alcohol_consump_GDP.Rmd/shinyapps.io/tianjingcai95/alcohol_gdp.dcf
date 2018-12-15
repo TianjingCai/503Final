@@ -1,0 +1,12 @@
+name: alcohol_gdp
+title: Alcohol_GDP
+username:
+account: tianjingcai95
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 617472
+bundleId: 1764787
+url: https://tianjingcai95.shinyapps.io/alcohol_gdp/
+when: 1544851850.61325
+asMultiple: FALSE
+asStatic: FALSE

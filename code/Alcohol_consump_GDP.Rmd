@@ -1,0 +1,76 @@
+---
+title: "Alcohol_consump_GDP_shiny"
+author: "Tianjing Cai"
+date: "12/14/2018"
+output: html_document
+runtime: shiny
+---
+
+
+```{r echo = FALSE, message=FALSE, include = FALSE}
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+require(data.table)
+library(tidyverse)
+Sys.setenv(TZ = "America/New_York")
+rsconnect::setAccountInfo(name='tianjingcai95',
+			  token='886DF70418F9AA110765C3D4A9B2A06D',
+			  secret='YULeS4CRLriMmMfpT/F3f8cL04S7iOWs0A+fM/uA')
+```
+
+```{r echo = FALSE}
+alcohol_gdp <- fread('alcohol-consumption-vs-gdp-per-capita.csv')
+setnames(alcohol_gdp, c('Entity', 'Code', 'Year', 'Alcohol consumption', 'GDP per capita', 'Total population'))
+
+# only look at alcohol consumption and gdp value at year 2015
+alcohol_gdp_2015 <- alcohol_gdp %>% filter(Year == 2015) 
+# Define UI for application that plots features of movies
+ui <- fluidPage(
+  
+  # Sidebar layout with a input and output definitions
+  sidebarLayout(
+    
+    # Inputs
+    sidebarPanel(
+      
+      # Select variable for y-axis
+      selectInput(inputId = "y", 
+                  label = "Y-axis:",
+                  choices = c("Alcohol consumption"), 
+                  selected = "Alcohol consumption"),
+      
+      # Select variable for x-axis
+      selectInput(inputId = "x", 
+                  label = "X-axis:",
+                  choices = c("GDP per capita"), 
+                  selected = "GDP per capita"),
+      
+      # Set alpha level
+      sliderInput(inputId = "gdp_threshold", 
+                  label = 'Minimum GDP threshold:', 
+                  min = 1000, max = 100000, 
+                  value = 52000)
+    ),
+    
+    # Outputs
+    mainPanel(
+      plotOutput(outputId = "scatterplot")
+    )
+  )
+)
+
+# Define server function required to create the scatterplot
+server <- function(input, output) {
+  alcohol_gdp_2015_filtered <- reactive({alcohol_gdp_2015 %>% filter(`GDP per capita` > input$gdp_threshold)})
+  # Create scatterplot object the plotOutput function is expecting
+  output$scatterplot <- renderPlot({
+    ggplot(data = alcohol_gdp_2015_filtered(), aes_string(x = as.name(input$x), y = as.name(input$y))) +
+      geom_point(aes(color = 'red'))+geom_text(aes(label=Entity),hjust=0, vjust=0) + ggtitle('Scatterplot for GDP per capital versus alcohol consumption')
+  })
+}
+
+# Create the Shiny app object
+shinyApp(ui = ui, server = server)
+```
